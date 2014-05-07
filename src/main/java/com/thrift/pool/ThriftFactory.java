@@ -14,16 +14,18 @@ public class ThriftFactory implements PooledObjectFactory<TTransport> {
 
     private final String host;
     private final int port;
+    private final int timeout;
 
-    public ThriftFactory(final String host, final int port) {
+    public ThriftFactory(final String host, final int port, int timeout) {
         this.host = host;
         this.port = port;
+        this.timeout = timeout;
     }
 
     @Override
     public PooledObject<TTransport> makeObject() throws Exception {
         System.out.println("Create TTransport");
-        TTransport tTransport = new TFramedTransport(new TSocket(this.host, this.port));
+        TTransport tTransport = new TFramedTransport(new TSocket(this.host, this.port, this.timeout));
         tTransport.open();
         return new DefaultPooledObject<TTransport>(tTransport);
     }

@@ -28,8 +28,8 @@ public class ThriftServer {
             tArgs.transportFactory(new TFramedTransport.Factory());
             tArgs.protocolFactory(new TCompactProtocol.Factory());
             TServer server = new TNonblockingServer(tArgs);
-            server.serve();
             System.out.println("Starting the non blocking server...");
+            server.serve();
         } catch (TTransportException e) {
             e.printStackTrace();
         }

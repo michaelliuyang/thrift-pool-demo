@@ -1,7 +1,6 @@
 package com.thrift.pool;
 
 import org.apache.commons.pool2.impl.GenericObjectPool;
-import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.apache.thrift.transport.TTransport;
 
 /**
@@ -11,7 +10,8 @@ public class ThriftPool {
 
     private GenericObjectPool<TTransport> pool;
 
-    public ThriftPool(GenericObjectPoolConfig config, ThriftFactory factory) {
+    public ThriftPool(String host, int port, int timeout, ThriftPoolConfig config) {
+        ThriftFactory factory = new ThriftFactory(host, port, timeout);
         this.pool = new GenericObjectPool<TTransport>(factory, config);
     }
 
@@ -19,13 +19,24 @@ public class ThriftPool {
         try {
             return pool.borrowObject();
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new RuntimeException("Get thrift resource error", e);
         }
-        return null;
     }
 
     public void returnResource(TTransport tTransport) {
-        pool.returnObject(tTransport);
+        try {
+            pool.returnObject(tTransport);
+        } catch (Exception e) {
+            throw new RuntimeException("return thrift resource error", e);
+        }
+    }
+
+    public void close() {
+        try {
+            pool.close();
+        } catch (Exception e) {
+            throw new RuntimeException("Close thrift pool error", e);
+        }
     }
 
 }
